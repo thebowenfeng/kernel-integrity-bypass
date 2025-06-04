@@ -63,7 +63,6 @@ as `RegistrationContext`.
 - Not portable. The process of finding a suitable driver image to hijack is a trial and error and involves extensive manual testing. For example, hijacking a driver that isn't mapped globally but to specific processes only (e.g `win32kbase.sys`) will lead to page fault BSODs.
 
 ### Mitigation strategies
-![Integrity patcher logs](https://raw.githubusercontent.com/thebowenfeng/kernel-integrity-bypass/refs/heads/master/images/integrity-patcher.PNG)
 
 If using the first technique, simply perform basic image integrity checks against valid driver images by comparing it with
 image on disk.
@@ -119,6 +118,7 @@ ExFreePoolWithTag(modules, 'pool');
 ```
 
 ## Integrity patcher
+![Integrity patcher logs](https://raw.githubusercontent.com/thebowenfeng/kernel-integrity-bypass/refs/heads/master/images/integrity-patcher.PNG)
 
 This technique attacks the underlying data structure used by `MiLookupDataTableEntry` which `MmVerifyCallbackFunctionCheckFlags`
 uses to check if a supplied address (that being the callback function address) is within a valid image. `MiLookupDataTableEntry`
