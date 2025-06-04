@@ -117,4 +117,40 @@ ExFreePoolWithTag(modules, 'pool');
 
 ## Integrity patcher
 
-This technique attacks the underlying data structure used by `MiLookupDataTableEntry`
+This technique attacks the underlying data structure used by `MiLookupDataTableEntry` which `MmVerifyCallbackFunctionCheckFlags`
+uses to check if a supplied address (that being the callback function address) is within a valid image. `MiLookupDataTableEntry`
+(supposedly) returns an opaque kernel structure `LDR_DATA_TABLE_ENTRY`, which contains a member that denotes if a image is
+valid. The underlying structure that `MiLookupDataTableEntry` queries is another opaque structure contained in an AVL tree 
+(used to be a linked list).
+
+The PoC will simply modify the root tree node's base image address to the callback's address so `MiLookupDataTableEntry` will
+return the root node when `MmVerifyCallbackFunctionCheckFlags` calls the function. Then, the return value is parsed and the 
+`isValid` member is modified to pass checks. 
+
+A more thorough and foulproof method is to insert a brand new node into the tree with fake information that denotes a 
+supposedly valid kernel image. This is not done due to its complex nature, having to reverse engineer multiple opaque kernel
+structures and having to work with AVL trees in general (which `ntoskrnl` conveniently has `RtlAvlInsertNodeEx`).
+
+### Advantages
+
+- No patching protected memory. Memory that is patched is meant to be modified.
+
+### Disadvantages
+
+- Not portable. Opaque kernel structures changes between versions and global variables (one that contains the AVL tree)'s static offsets also change.
+- Depending on which technique there may be other drawbacks
+  - Using technique #1 (PoC) will result in the same drawbacks as "code patcher"
+  - Using technique #2 will leave traces of the unsigned driver, leaving it vulnerable for being flagged.
+
+### Mitigation strategies
+
+Mitigation strategies for technique #1 is virtually identical to the ones discussed for "code patcher". Namely, it involves
+enumerating through the callback list, checking if each callback is registered in a valid image as the patch is temporary and
+has to be restored
+
+Technique #2 mainly leaves the unsigned driver vulnerable to exposure, as a permanent record of its existence is now available
+for AV/AC software to log. One strategy can be enumerating through the AVL tree, checking if each image is backed on by an image
+on disk, which is a common check performed by most AV/AC softwares already. However, this can theoretically be mitigated by
+a well-spoofed fake record that points to some existing image on disk, which the AV/AC can then perform an image integrity validation
+(discussed in part for "integrity spoofing") to check if the content of the actual image matches the fake supplised image on disk, which will
+inevitably lead to discrepancies.

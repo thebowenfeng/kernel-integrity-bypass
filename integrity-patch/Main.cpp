@@ -348,7 +348,7 @@ NTSTATUS DriverEntry() {
 	Print("Patching isValid bit with result: %d (okay if not 0)", originalIsValid & 32);
 
 	UNICODE_STRING altitude = { 0 };
-	RtlInitUnicodeString(&altitude, L"1235.678");
+	RtlInitUnicodeString(&altitude, L"1235.678912");
 	OB_CALLBACK_REGISTRATION CallbackRegistration = { 0 };
 	OB_OPERATION_REGISTRATION OperationRegistration = { 0 };
 

@@ -341,7 +341,7 @@ NTSTATUS DriverEntry() {
 	Print("PreCallback location: %p", PreOperationCallback);
 
 	UNICODE_STRING altitude = { 0 };
-	RtlInitUnicodeString(&altitude, L"1235.678");
+	RtlInitUnicodeString(&altitude, L"1235.67891");
 	OB_CALLBACK_REGISTRATION CallbackRegistration = { 0 };
 	OB_OPERATION_REGISTRATION OperationRegistration = { 0 };
 
