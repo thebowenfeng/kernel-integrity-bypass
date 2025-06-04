@@ -11,7 +11,7 @@ This repository explores three broad categories of methods bypassing this restri
 potential mitigation strategies for anti-virus or anti-cheat software.
 
 ## Code patching
-[code patcher logs](https://raw.githubusercontent.com/thebowenfeng/kernel-integrity-bypass/refs/heads/master/images/code-patcher.PNG)
+![code patcher logs](https://raw.githubusercontent.com/thebowenfeng/kernel-integrity-bypass/refs/heads/master/images/code-patcher.PNG)
 
 Refers to a broad family of techniques that involves patching `ntoskrnl.exe` image, specifically functions involved in the
 integrity check flow, such as `MmVerifyCallbackFunctionCheckFlags` or `MiLookupDataTableEntry`. The attached PoC patches 
@@ -34,7 +34,7 @@ AV/AC software can easily enumerate callback list directly and manually verify i
 range of a valid image. Although the callback is registered and will execute, its address is within an invalid image.
 
 ## Integrity spoofing/hijacking
-[integrity spoofer logs](https://raw.githubusercontent.com/thebowenfeng/kernel-integrity-bypass/refs/heads/master/images/integrity-spoofer.PNG)
+![integrity spoofer logs](https://raw.githubusercontent.com/thebowenfeng/kernel-integrity-bypass/refs/heads/master/images/integrity-spoofer.PNG)
 
 Involves registering the callback itself in a valid image. Traditionally, this is done by finding "code caves" 
 (empty bytes within an executable section of a driver image) and placing code there. However, this is easily 
@@ -63,7 +63,7 @@ as `RegistrationContext`.
 - Not portable. The process of finding a suitable driver image to hijack is a trial and error and involves extensive manual testing. For example, hijacking a driver that isn't mapped globally but to specific processes only (e.g `win32kbase.sys`) will lead to page fault BSODs.
 
 ### Mitigation strategies
-[Integrity patcher logs](https://raw.githubusercontent.com/thebowenfeng/kernel-integrity-bypass/refs/heads/master/images/integrity-patcher.PNG)
+![Integrity patcher logs](https://raw.githubusercontent.com/thebowenfeng/kernel-integrity-bypass/refs/heads/master/images/integrity-patcher.PNG)
 
 If using the first technique, simply perform basic image integrity checks against valid driver images by comparing it with
 image on disk.
