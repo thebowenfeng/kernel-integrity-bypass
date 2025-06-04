@@ -1,0 +1,62 @@
+;
+; integrity-spoof.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System ; TODO: specify appropriate Class
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider    = %ManufacturerName%
+CatalogFile = integrity-spoof.cat
+DriverVer   = ; TODO: set DriverVer in stampinf property pages
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+integrity-spoof.sys = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...16299 ; %13% support introduced in build 16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%integrity-spoof.DeviceDesc% = integrity-spoof_Device, Root\integrity-spoof ; TODO: edit hw-id
+
+[integrity-spoof_Device.NT]
+CopyFiles = File_Copy
+
+[File_Copy]
+integrity-spoof.sys
+
+;-------------- Service installation
+[integrity-spoof_Device.NT.Services]
+AddService = integrity-spoof,%SPSVCINST_ASSOCSERVICE%, integrity-spoof_Service_Inst
+
+; -------------- integrity-spoof driver install sections
+[integrity-spoof_Service_Inst]
+DisplayName    = %integrity-spoof.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\integrity-spoof.sys
+
+[integrity-spoof_Device.NT.Wdf]
+KmdfService = integrity-spoof, integrity-spoof_wdfsect
+
+[integrity-spoof_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "integrity-spoof Installation Disk"
+integrity-spoof.DeviceDesc = "integrity-spoof Device"
+integrity-spoof.SVCDESC = "integrity-spoof Service"

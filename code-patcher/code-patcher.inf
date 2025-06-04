@@ -1,0 +1,62 @@
+;
+; code-patcher.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System ; TODO: specify appropriate Class
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider    = %ManufacturerName%
+CatalogFile = code-patcher.cat
+DriverVer   = ; TODO: set DriverVer in stampinf property pages
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+code-patcher.sys = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...16299 ; %13% support introduced in build 16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%code-patcher.DeviceDesc% = code-patcher_Device, Root\code-patcher ; TODO: edit hw-id
+
+[code-patcher_Device.NT]
+CopyFiles = File_Copy
+
+[File_Copy]
+code-patcher.sys
+
+;-------------- Service installation
+[code-patcher_Device.NT.Services]
+AddService = code-patcher,%SPSVCINST_ASSOCSERVICE%, code-patcher_Service_Inst
+
+; -------------- code-patcher driver install sections
+[code-patcher_Service_Inst]
+DisplayName    = %code-patcher.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\code-patcher.sys
+
+[code-patcher_Device.NT.Wdf]
+KmdfService = code-patcher, code-patcher_wdfsect
+
+[code-patcher_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "code-patcher Installation Disk"
+code-patcher.DeviceDesc = "code-patcher Device"
+code-patcher.SVCDESC = "code-patcher Service"
